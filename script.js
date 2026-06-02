@@ -508,8 +508,34 @@ function keyReleased() {
 // =============================================
 //  TOUCH
 // =============================================
-function touchStarted() { return false; }
-function touchEnded()   { return false; }
+function touchStarted() {
+  if (!gameStarted) return false;
+  // Suporte de toque simples no canvas: toque no lado esquerdo ou direito para mover
+  if (mouseX < width / 2) {
+    leftPressed = true;
+  } else {
+    rightPressed = true;
+  }
+  return false;
+}
+function touchEnded() {
+  leftPressed = false;
+  rightPressed = false;
+  return false;
+}
+
+function mousePressed() {
+  if (!gameStarted) return;
+  if (mouseX < width / 2) {
+    leftPressed = true;
+  } else {
+    rightPressed = true;
+  }
+}
+function mouseReleased() {
+  leftPressed = false;
+  rightPressed = false;
+}
 
 // =============================================
 //  SOM
@@ -844,4 +870,8 @@ window.onload = () => {
   trocarTema();
   const best = Number(localStorage.getItem('bestScore') || 0);
   setTxt('start-best-val', best);
-}
+};
+
+window.addEventListener('resize', () => {
+  if (gameStarted) windowResized();
+});
