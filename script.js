@@ -512,12 +512,20 @@ function keyReleased() {
 //  TOUCH
 // =============================================
 function touchStarted() {
+  // Apenas processa toque dentro do canvas durante o jogo
   if (!gameStarted) return false;
-  // Suporte de toque simples no canvas: toque no lado esquerdo ou direito para mover
-  if (mouseX < width / 2) {
-    leftPressed = true;
-  } else {
-    rightPressed = true;
+  
+  const canvas = document.querySelector('canvas');
+  if (!canvas) return false;
+  
+  const rect = canvas.getBoundingClientRect();
+  if (mouseX >= rect.left && mouseX <= rect.right &&
+      mouseY >= rect.top && mouseY <= rect.bottom) {
+    if (mouseX < rect.left + rect.width / 2) {
+      leftPressed = true;
+    } else {
+      rightPressed = true;
+    }
   }
   return false;
 }
@@ -873,6 +881,26 @@ window.onload = () => {
   trocarTema();
   const best = Number(localStorage.getItem('bestScore') || 0);
   setTxt('start-best-val', best);
+  
+  // Setup event listeners para botões touch
+  const btnLeft = document.getElementById('btn-left');
+  const btnRight = document.getElementById('btn-right');
+  
+  if (btnLeft) {
+    btnLeft.addEventListener('touchstart', (e) => { e.preventDefault(); leftPressed = true; }, false);
+    btnLeft.addEventListener('touchend', (e) => { e.preventDefault(); leftPressed = false; }, false);
+    btnLeft.addEventListener('mousedown', (e) => { leftPressed = true; });
+    btnLeft.addEventListener('mouseup', (e) => { leftPressed = false; });
+    btnLeft.addEventListener('mouseleave', (e) => { leftPressed = false; });
+  }
+  
+  if (btnRight) {
+    btnRight.addEventListener('touchstart', (e) => { e.preventDefault(); rightPressed = true; }, false);
+    btnRight.addEventListener('touchend', (e) => { e.preventDefault(); rightPressed = false; }, false);
+    btnRight.addEventListener('mousedown', (e) => { rightPressed = true; });
+    btnRight.addEventListener('mouseup', (e) => { rightPressed = false; });
+    btnRight.addEventListener('mouseleave', (e) => { rightPressed = false; });
+  }
 };
 
 window.addEventListener('resize', () => {
