@@ -47,7 +47,9 @@ const PERSONAGENS = {
   futebol:    { nome: 'Capivara Futebol',    emoji: '⚽', arquivo: 'assets/futebol-removebg-preview.png',    aura: [90, 210, 90, 110] },
   astronauta: { nome: 'Capivara Astronauta', emoji: '🚀', arquivo: 'assets/astronauta-removebg-preview.png', aura: [170, 210, 255, 110] },
   bailarina:  { nome: 'Capivara Bailarina',  emoji: '🩰', arquivo: 'assets/bailarina-removebg-preview.png',  aura: [255, 175, 215, 110] },
-  caipira:   { nome: 'Capivara Caipira',   emoji: '🤠', arquivo: 'assets/capivara.png',   aura: [220, 180, 90, 110] }
+  caipira:   { nome: 'Capivara Caipira',   emoji: '🤠', arquivo: 'assets/caipivara.png',   aura: [220, 180, 90, 110] },
+  junino:    { nome: 'Capivara Junina (Menino)', emoji: '👦', arquivo: 'assets/junino.png', aura: [200,140,60,110] },
+  junina:    { nome: 'Capivara Junina (Menina)', emoji: '👧', arquivo: 'assets/junina.png', aura: [255,140,180,110] }
 };
 
 const DIFICULDADES = {

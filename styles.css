@@ -33,6 +33,11 @@ body {
   min-height: 100vh;
 }
 
+/* Mantém a tela inicial centralizada verticalmente */
+body.inicio {
+  justify-content: center;
+}
+
 /* =============================================
    ROTATE SCREEN  –  exibida em portrait mobile
    ============================================= */
