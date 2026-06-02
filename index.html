@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="theme-color" content="#1b6306">
+  <title>Capivara Dash</title>
+  <link rel="apple-touch-icon" sizes="180x180" href="assets/apple-touch-icon.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="assets/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="assets/favicon-16x16.png">
+  <link rel="manifest" href="assets/site.webmanifest">
+  <link rel="stylesheet" href="styles.css">
+  <link href="https://fonts.googleapis.com/css2?family=Luckiest+Guy&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.4.2/p5.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.4.2/addons/p5.sound.min.js"></script>
+  <script src="script.js" defer></script>
+</head>
+<body class="inicio">
+
+  <!-- ===== TELA: GIRAR DISPOSITIVO (portrait mobile) ===== -->
+  <div id="rotate-screen">
+    <div class="rotate-content">
+      <div class="rotate-icon">📱</div>
+      <div class="rotate-arrow">→</div>
+      <div class="rotate-icon rotated">📱</div>
+      <h2>Gire o celular!</h2>
+      <p>Capivara Dash funciona melhor<br>na horizontal 🌿</p>
+    </div>
+  </div>
+
+  <!-- ===== TELA DE INÍCIO ===== -->
+  <div id="start-screen">
+
+    <div class="start-left">
+      <img src="assets/capivara-icon.png" alt="Capivara" class="icone-capivara">
+      <h1 id="game-title">Capivara<br><span>Dash</span></h1>
+
+      <p class="instrucoes">
+        <span><img class="inst-icon" src="assets/comida.png"> Capim → <b>+10 pts</b></span>
+        <span><img class="inst-icon" src="assets/ovo.png"> Pedra → <b>perde vida</b></span>
+        <span>❤️ Coração → <b>recupera vida</b></span>
+        <span>🔑 Chave (fase 5+) → <b>revive 1×</b></span>
+      </p>
+
+      <div class="record-badge" id="start-record">
+        🏆 Recorde: <span id="start-best-val">0</span>
+      </div>
+    </div>
+
+    <div class="start-right">
+
+      <!-- Dificuldade -->
+      <div class="config-bloco">
+        <span class="config-label">Dificuldade</span>
+        <div class="dif-btns">
+          <button class="dif-btn active" data-dif="facil"   onclick="selecionarDificuldade('facil')">😊 Fácil</button>
+          <button class="dif-btn"        data-dif="medio"   onclick="selecionarDificuldade('medio')">😤 Médio</button>
+          <button class="dif-btn"        data-dif="dificil" onclick="selecionarDificuldade('dificil')">💀 Difícil</button>
+        </div>
+      </div>
+
+      <!-- Personagem -->
+      <div class="config-bloco">
+        <span class="config-label">Personagem</span>
+        <div class="char-opcoes">
+          <button class="char-btn active" data-char="classica"   onclick="selecionarPersonagem('classica')"   title="Capivara Clássica">🦫</button>
+          <button class="char-btn"        data-char="ninja"      onclick="selecionarPersonagem('ninja')"      title="Capivara Ninja">🥷</button>
+          <button class="char-btn"        data-char="princesa"   onclick="selecionarPersonagem('princesa')"   title="Capivara Princesa">👑</button>
+          <button class="char-btn"        data-char="futebol"    onclick="selecionarPersonagem('futebol')"    title="Capivara Futebol">⚽</button>
+          <button class="char-btn"        data-char="astronauta" onclick="selecionarPersonagem('astronauta')" title="Capivara Astronauta">🚀</button>
+          <button class="char-btn"        data-char="bailarina"  onclick="selecionarPersonagem('bailarina')"  title="Capivara Bailarina">🩰</button>
+        </div>
+      </div>
+
+      <!-- Tema -->
+      <div class="config-bloco">
+        <span class="config-label">Tema</span>
+        <div class="custom-select" id="tema-select">
+          <button type="button" class="select-trigger" id="tema-trigger">
+            <span class="selected-value">🌅 Padrão</span>
+            <span class="select-arrow">▾</span>
+          </button>
+          <div class="select-options" id="tema-options" aria-hidden="true">
+            <button type="button" class="select-option active" data-value="padrao">🌅 Padrão</button>
+            <button type="button" class="select-option" data-value="noturno">🌙 Noturno</button>
+            <button type="button" class="select-option" data-value="floresta">🌧️ Chuva</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Música -->
+      <div class="config-bloco">
+        <span class="config-label">Música</span>
+        <div class="music-btns">
+          <button class="music-btn active" data-music="fundo"  onclick="selecionarMusica('fundo')"  title="Tropical">🎵 Tropical</button>
+          <button class="music-btn"        data-music="fundo2" onclick="selecionarMusica('fundo2')" title="Aventura">🎶 Aventura</button>
+          <button class="music-btn"        data-music="fundo3" onclick="selecionarMusica('fundo3')" title="Relaxante">🎸 Relaxante</button>
+          <button class="music-btn mute-toggle" onclick="toggleMuteStart()" id="mute-start-btn">🔊 Som</button>
+        </div>
+      </div>
+
+      <button id="btn-jogar" onclick="startGame()">
+        <i class="fa-solid fa-play"></i> JOGAR
+      </button>
+
+      <p class="controles-hint">
+        <span class="desktop-hint">← → Mover &nbsp;·&nbsp; P Pausar &nbsp;·&nbsp; M Mutar</span>
+        <span class="mobile-hint">👆 Botões na tela para mover</span>
+      </p>
+    </div>
+  </div>
+
+  <!-- ===== INTERFACE DO JOGO ===== -->
+  <div class="game-wrapper" id="game-ui" style="display:none;">
+
+    <!-- HUD topo -->
+    <div class="hud-top" id="game-header">
+      <div class="hud-cell">
+        <span class="hud-label">Pontos</span>
+        <span class="hud-value" id="hud-score">0</span>
+      </div>
+
+      <div class="hud-cell hud-center">
+        <div class="vidas-container" id="vidas-html"></div>
+        <div class="fase-bar-wrapper">
+          <span class="fase-label">Fase <span id="hud-fase">1</span></span>
+          <div class="fase-bar-track">
+            <div class="fase-bar-fill" id="fase-bar-fill"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="hud-cell hud-right-group">
+        <div class="hud-sub">
+          <span class="hud-label">Recorde</span>
+          <span class="hud-value record" id="hud-best">0</span>
+        </div>
+        <button class="hud-icon-btn" onclick="voltarParaInicio()" title="Voltar">
+          <i class="fa-solid fa-arrow-left"></i>
+        </button>
+        <button class="hud-action-btn" onclick="salvarEVoltar()" title="Salvar e Voltar">
+          <i class="fa-solid fa-floppy-disk"></i>
+        </button>
+        <button class="hud-icon-btn" onclick="togglePause()" id="btn-pause-hud" title="Pausar">
+          <i class="fa-solid fa-pause" id="hud-pause-icon"></i>
+        </button>
+        <button class="hud-icon-btn" onclick="toggleMute()" id="mute-button" title="Mutar">
+          <i id="mute-icon" class="fa-solid fa-volume-high"></i>
+        </button>
+      </div>
+    </div>
+
+    <!-- Área principal: sidebar esq + canvas + sidebar dir -->
+    <div class="game-area">
+
+      <div id="left-bar" class="sidebar">
+        <span>CAPIVARA DASH</span>
+      </div>
+
+      <div id="game-canvas"></div>
+
+      <div id="right-bar" class="sidebar-right">
+        <div class="sidebar-block">
+          <span class="hud-label">Pontos</span>
+          <span class="hud-value" id="hud-score-side">0</span>
+        </div>
+        <div class="sidebar-block">
+          <span class="hud-label">Fase</span>
+          <span class="hud-value" id="hud-fase-side">1</span>
+        </div>
+        <div class="sidebar-block">
+          <span class="hud-label">Recorde</span>
+          <span class="hud-value record" id="hud-best-side">0</span>
+        </div>
+        <div class="sidebar-block" id="chave-indicator" style="display:none;">
+          <span class="chave-hud-icon">🔑</span>
+          <span class="hud-label">Reviver</span>
+        </div>
+
+        <div id="pause-container">
+          <label class="switch">
+            <input type="checkbox" id="pause-toggle" onchange="handlePauseToggle()">
+            <span class="slider"><span class="slider-text" id="pause-status">Jogando</span></span>
+          </label>
+        </div>
+
+        <button id="mute-button-side" onclick="toggleMute()" title="Som">
+          <i id="mute-icon-side" class="fa-solid fa-volume-high"></i>
+        </button>
+      </div>
+    </div>
+
+    <!-- Controles touch (mobile landscape) -->
+    <div class="touch-controls" id="touch-controls">
+      <button class="touch-btn touch-dir" id="btn-left"
+        ontouchstart="leftPressed=true;return false;" ontouchend="leftPressed=false;return false;"
+        onmousedown="leftPressed=true" onmouseup="leftPressed=false" onmouseleave="leftPressed=false">
+        <i class="fa-solid fa-arrow-left"></i>
+      </button>
+
+      <div class="touch-center-controls">
+        <button class="touch-btn touch-small" onclick="togglePause()">
+          <i class="fa-solid fa-pause" id="touch-pause-icon"></i>
+        </button>
+        <button class="touch-btn touch-small" onclick="toggleMute()">
+          <i class="fa-solid fa-volume-high" id="touch-mute-icon"></i>
+        </button>
+      </div>
+
+      <button class="touch-btn touch-dir" id="btn-right"
+        ontouchstart="rightPressed=true;return false;" ontouchend="rightPressed=false;return false;"
+        onmousedown="rightPressed=true" onmouseup="rightPressed=false" onmouseleave="rightPressed=false">
+        <i class="fa-solid fa-arrow-right"></i>
+      </button>
+    </div>
+  </div>
+
+  <!-- ===== GAME OVER ===== -->
+  <div id="game-over-popup" style="display:none;">
+    <div class="gameover-inner">
+      <img src="assets/capivara-icon.png" alt="Capivara" class="gameover-img">
+      <h2>Game Over!</h2>
+      <div class="score-display">
+        <div class="score-item">
+          <span class="score-label">Sua pontuação</span>
+          <span class="score-value" id="final-score">0</span>
+        </div>
+        <div class="score-item">
+          <span class="score-label">🏆 Recorde</span>
+          <span class="score-value record" id="final-best">0</span>
+        </div>
+      </div>
+      <div id="new-record-badge" style="display:none;">🎉 Novo Recorde!</div>
+      <div class="gameover-dif" id="gameover-dif"></div>
+      <div class="gameover-buttons">
+        <button class="btn-primary" onclick="restartGame()">
+          <i class="fa-solid fa-rotate-right"></i> Jogar Novamente
+        </button>
+        <button class="btn-secondary" onclick="voltarParaInicio()">
+          <i class="fa-solid fa-house"></i> Menu
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== OVERLAY MUDANÇA DE FASE ===== -->
+  <div id="fase-overlay" class="fase-overlay" style="display:none;">
+    <div class="fase-overlay-content">
+      <div class="fase-overlay-emoji" id="fase-overlay-emoji">🚀</div>
+      <div class="fase-overlay-titulo">FASE</div>
+      <div class="fase-overlay-numero" id="fase-overlay-num">2</div>
+      <div class="fase-overlay-sub" id="fase-overlay-sub">Ficou mais rápido!</div>
+    </div>
+  </div>
+
+  <!-- ===== TOAST ===== -->
+  <div id="toast" class="toast" style="display:none;"></div>
+
+  <footer class="footer">
+    <p>&copy; 2025 Tainara Martins. Todos os direitos reservados.</p>
+  </footer>
+</body>
+</html>
