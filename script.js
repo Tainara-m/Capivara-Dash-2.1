@@ -91,6 +91,8 @@ function preload() {
 function setup() {
   let canvas = createCanvas(calcW(), calcH());
   canvas.parent('game-canvas');
+  // Impede que o p5.js consuma eventos de toque dos botões DOM
+  canvas.elt.addEventListener('touchstart', (e) => e.stopPropagation(), { passive: false });
   resetCapivaraPos();
   textFont('Luckiest Guy');
 }
@@ -98,7 +100,7 @@ function setup() {
 function calcW() { return min(windowWidth  - getSidebarW(), MAX_WIDTH);  }
 function calcH() { return min(windowHeight - getHudH(),    MAX_HEIGHT); }
 function getSidebarW() { return windowWidth >= 760 ? 260 : 0; }
-function getHudH()     { return 60; }
+function getHudH()     { return windowWidth < 760 ? 130 : 60; }
 
 function windowResized() {
   resizeCanvas(calcW(), calcH());
@@ -377,7 +379,7 @@ function updatePlacarAnimado() {
 //  UPDATE FASE
 // =============================================
 function updateFase() {
-  let novaFase = Math.floor(score / 100) + 1;
+  let novaFase = Math.floor(score / 100);
   if (novaFase <= fase) return;
   fase = novaFase;
 
@@ -430,8 +432,8 @@ function mostrarOverlapFase(numFase) {
     setTimeout(() => {
       overlay.style.display = 'none';
       overlay.classList.remove('fase-hide');
-    }, 500);
-  }, 2000);
+    }, 300);
+  }, 900);
 }
 
 // =============================================
@@ -508,45 +510,12 @@ function keyReleased() {
   if (keyCode === RIGHT_ARROW) rightPressed = false;
 }
 
-// =============================================
-//  TOUCH
-// =============================================
-function touchStarted() {
-  // Apenas processa toque dentro do canvas durante o jogo
-  if (!gameStarted) return false;
-  
-  const canvas = document.querySelector('canvas');
-  if (!canvas) return false;
-  
-  const rect = canvas.getBoundingClientRect();
-  if (mouseX >= rect.left && mouseX <= rect.right &&
-      mouseY >= rect.top && mouseY <= rect.bottom) {
-    if (mouseX < rect.left + rect.width / 2) {
-      leftPressed = true;
-    } else {
-      rightPressed = true;
-    }
-  }
-  return false;
-}
-function touchEnded() {
-  leftPressed = false;
-  rightPressed = false;
-  return false;
-}
+// p5.js chama preventDefault em touchstart globalmente — retornar true desativa isso
+function touchStarted() { return true; }
+function touchEnded()   { return true; }
 
-function mousePressed() {
-  if (!gameStarted) return;
-  if (mouseX < width / 2) {
-    leftPressed = true;
-  } else {
-    rightPressed = true;
-  }
-}
-function mouseReleased() {
-  leftPressed = false;
-  rightPressed = false;
-}
+function mousePressed() {}
+function mouseReleased() {}
 
 // =============================================
 //  SOM
@@ -700,7 +669,7 @@ function startGame() {
   gameStarted = true;
   jogoPausado = false;
   score = 0; displayedScore = 0;
-  lives = 3; fase = 1;
+  lives = 3; fase = 0;
   temChave = false; chaveCaiuEssaPartida = false; chaveDrop = null;
   particulas = []; flashFrames = 0;
   leftPressed = false; rightPressed = false;
@@ -876,6 +845,17 @@ function initCustomSelect() {
   });
 }
 
+function setupTouchBtn(id, onStart, onEnd) {
+  const btn = document.getElementById(id);
+  if (!btn) return;
+  btn.addEventListener('touchstart', (e) => { e.preventDefault(); onStart(); }, { passive: false });
+  btn.addEventListener('touchend',   (e) => { e.preventDefault(); onEnd();   }, { passive: false });
+  btn.addEventListener('touchcancel',(e) => { e.preventDefault(); onEnd();   }, { passive: false });
+  btn.addEventListener('mousedown',  () => onStart());
+  btn.addEventListener('mouseup',    () => onEnd());
+  btn.addEventListener('mouseleave', () => onEnd());
+}
+
 window.onload = () => {
   initCustomSelect();
   trocarTema();
@@ -883,24 +863,14 @@ window.onload = () => {
   setTxt('start-best-val', best);
   
   // Setup event listeners para botões touch
-  const btnLeft = document.getElementById('btn-left');
-  const btnRight = document.getElementById('btn-right');
-  
-  if (btnLeft) {
-    btnLeft.addEventListener('touchstart', (e) => { e.preventDefault(); leftPressed = true; }, false);
-    btnLeft.addEventListener('touchend', (e) => { e.preventDefault(); leftPressed = false; }, false);
-    btnLeft.addEventListener('mousedown', (e) => { leftPressed = true; });
-    btnLeft.addEventListener('mouseup', (e) => { leftPressed = false; });
-    btnLeft.addEventListener('mouseleave', (e) => { leftPressed = false; });
-  }
-  
-  if (btnRight) {
-    btnRight.addEventListener('touchstart', (e) => { e.preventDefault(); rightPressed = true; }, false);
-    btnRight.addEventListener('touchend', (e) => { e.preventDefault(); rightPressed = false; }, false);
-    btnRight.addEventListener('mousedown', (e) => { rightPressed = true; });
-    btnRight.addEventListener('mouseup', (e) => { rightPressed = false; });
-    btnRight.addEventListener('mouseleave', (e) => { rightPressed = false; });
-  }
+  setupTouchBtn('btn-left',
+    () => { leftPressed = true; },
+    () => { leftPressed = false; }
+  );
+  setupTouchBtn('btn-right',
+    () => { rightPressed = true; },
+    () => { rightPressed = false; }
+  );
 };
 
 window.addEventListener('resize', () => {

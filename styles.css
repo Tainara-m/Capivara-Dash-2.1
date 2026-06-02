@@ -391,7 +391,9 @@ body.inicio {
   flex-direction: column;
   align-items: center;
   width: 100%;
-  min-height: 100vh;
+  height: 100dvh;
+  max-height: 100dvh;
+  overflow: hidden;
   opacity: 0;
   transition: opacity .3s;
 }
@@ -792,20 +794,23 @@ input:checked + .slider:before { transform: translateX(76px); }
   .game-area {
     flex-direction: column;
     align-items: stretch;
-    gap: 12px;
-    padding: 0 10px 12px;
+    gap: 0;
+    padding: 0;
+    flex: 1;
+    min-height: 0;
   }
 
   .hud-top {
     flex-wrap: wrap;
     justify-content: center;
-    gap: 8px;
+    gap: 6px;
+    padding: 4px 8px;
   }
 
   .hud-right-group {
     justify-content: center;
     flex-wrap: wrap;
-    gap: 8px;
+    gap: 6px;
   }
 
   .sidebar, .sidebar-right {
@@ -815,21 +820,23 @@ input:checked + .slider:before { transform: translateX(76px); }
   #game-canvas {
     max-width: 100%;
     width: 100%;
-    min-height: 280px;
+    flex: 1;
+    min-height: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
   }
 
   canvas {
-    max-height: calc(100vh - 240px);
+    max-height: calc(100dvh - 160px);
+    pointer-events: none;
   }
 
   .touch-controls {
-    position: sticky;
-    bottom: 0;
-    background: rgba(0,0,0,.28);
-    padding: 10px 12px 16px;
+    background: rgba(0,0,0,.35);
+    padding: 8px 12px 10px;
     border-top: 1px solid rgba(255,255,255,.18);
-    z-index: 15;
-    margin-top: 8px;
+    flex-shrink: 0;
   }
 }
 
@@ -886,10 +893,10 @@ input:checked + .slider:before { transform: translateX(76px); }
 }
 
 .fase-overlay.fase-show .fase-overlay-content {
-  animation: overlayIn .38s cubic-bezier(.17,.67,.37,1.2) both;
+  animation: overlayIn .25s cubic-bezier(.17,.67,.37,1.2) both;
 }
 .fase-overlay.fase-hide .fase-overlay-content {
-  animation: overlayOut .45s ease-in both;
+  animation: overlayOut .3s ease-in both;
 }
 @keyframes overlayIn {
   from { opacity:0; transform: scale(.55) translateY(28px); }
@@ -942,10 +949,10 @@ input:checked + .slider:before { transform: translateX(76px); }
    ============================================= */
 @media (max-height: 500px) {
   .hud-top { padding: 3px 10px; }
-  .touch-dir   { width: 58px; height: 52px; font-size: 22px; }
+  .touch-dir   { width: 58px; height: 48px; font-size: 22px; }
   .touch-small { width: 42px; height: 42px; font-size: 15px; }
   .touch-controls { padding: 4px 10px; }
-  canvas { max-height: calc(100vh - 120px); }
+  canvas { max-height: calc(100dvh - 110px); }
   .gameover-inner { padding: 12px; gap: 8px; }
   .gameover-img { width: 48px; }
 }
