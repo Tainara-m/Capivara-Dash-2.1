@@ -1,5 +1,5 @@
 // =============================================
-//  CAPIVARA DASH  –  script.js  v3.0
+//  CAPIVARA DASH  –  script.js  v4.0
 // =============================================
 
 // ---------- ASSETS ----------
@@ -62,11 +62,9 @@ const DIFICULDADES = {
 //  PRELOAD
 // =============================================
 function preload() {
-  // Personagens
   for (let key in PERSONAGENS) {
     personagensImg[key] = loadImage(PERSONAGENS[key].arquivo);
   }
-  
   comidaImg    = loadImage('assets/comida.png');
   ovoImg       = loadImage('assets/ovo.png');
   fundoPadrao  = loadImage('assets/fundo.jpeg');
@@ -76,10 +74,8 @@ function preload() {
   coracaoCheio = loadImage('assets/coracaoCheio.png');
   coracaoVazio = loadImage('assets/coracaoVazio.png');
   musicaFundo  = loadSound('assets/fundo.mp3');
-  // musicaFundo2 = loadSound('assets/fundo2.mp3'); // ARQUIVO NÃO EXISTE
-  // musicaFundo3 = loadSound('assets/fundo3.mp3'); // ARQUIVO NÃO EXISTE
-  musicaFundo2 = null; // placeholder
-  musicaFundo3 = null; // placeholder
+  musicaFundo2 = null;
+  musicaFundo3 = null;
   somComida    = loadSound('assets/comida.mp3');
   somPerdeVida = loadSound('assets/vida.mp3');
   somGameOver  = loadSound('assets/gameover.mp3');
@@ -97,10 +93,34 @@ function setup() {
   textFont('Luckiest Guy');
 }
 
-function calcW() { return min(windowWidth  - getSidebarW(), MAX_WIDTH);  }
-function calcH() { return min(windowHeight - getHudH(),    MAX_HEIGHT); }
-function getSidebarW() { return windowWidth >= 760 ? 260 : 0; }
-function getHudH()     { return windowWidth < 760 ? 130 : 60; }
+// Calcula dimensões do canvas respeitando o espaço real disponível
+function isMobileGameMode() {
+  // Em celulares na horizontal a largura pode passar de 760px.
+  // Por isso não dá para decidir o layout só pela largura.
+  const coarsePointer = window.matchMedia && window.matchMedia('(pointer: coarse)').matches;
+  const landscapePhone = windowWidth > windowHeight && windowHeight <= 520;
+  return windowWidth < 760 || coarsePointer || landscapePhone;
+}
+
+function calcW() {
+  if (!isMobileGameMode()) {
+    // Desktop real: desconta as duas sidebars (~76 + 136 + gaps)
+    return min(windowWidth - 240, MAX_WIDTH);
+  }
+  // Mobile/tablet: sem sidebars, usa quase toda a largura disponível
+  return min(windowWidth - 8, MAX_WIDTH);
+}
+
+function calcH() {
+  if (!isMobileGameMode()) {
+    // Desktop real: desconta HUD topo (~54px)
+    return min(windowHeight - 70, MAX_HEIGHT);
+  }
+  // Mobile/tablet: desconta HUD + controles touch + margem do rodapé
+  const hudH   = windowHeight <= 420 ? 34 : 44;
+  const touchH = windowHeight <= 420 ? 56 : 76;
+  return max(170, min(windowHeight - hudH - touchH - 18, MAX_HEIGHT));
+}
 
 function windowResized() {
   resizeCanvas(calcW(), calcH());
@@ -119,11 +139,9 @@ function resetCapivaraPos() {
 function draw() {
   if (!gameStarted) return;
 
-  // Fundo
   image(fundoImg, 0, 0, width, height);
 
   if (jogoPausado) {
-    // Redesenha sem mover — corrige bug de acúmulo de itens
     desenharItens();
     desenharParticulas();
     desenharCapivara();
@@ -131,11 +149,9 @@ function draw() {
     return;
   }
 
-  // Movimento
   if (leftPressed)  capivaraX = max(0,         capivaraX - velocidadeCapivara);
   if (rightPressed) capivaraX = min(width - 70, capivaraX + velocidadeCapivara);
 
-  // Atualiza tudo
   atualizarComidinhas();
   atualizarOvos();
   atualizarVidasDrop();
@@ -143,51 +159,39 @@ function draw() {
   atualizarParticulas();
   updatePlacarAnimado();
 
-  // Desenha
   desenharItens();
   desenharParticulas();
   desenharCapivara();
   drawFlash();
 }
 
-// ---------- Desenhar capivara ----------
 function desenharCapivara() {
   const personagem = PERSONAGENS[personagemAtual];
   const [r, g, b, a] = personagem.aura;
-  
-  // Desenha aura (círculo pulsante ao redor)
   push();
   noStroke();
   let auraTam = 90 + sin(frameCount * 0.08) * 8;
   fill(r, g, b, a);
   ellipse(capivaraX + 35, capivaraY + 35, auraTam);
   pop();
-  
-  // Desenha personagem
   const img = personagensImg[personagemAtual];
-  if (img) {
-    image(img, capivaraX, capivaraY, 70, 70);
-  }
+  if (img) image(img, capivaraX, capivaraY, 70, 70);
 }
 
-// ---------- Desenhar todos os itens ----------
 function desenharItens() {
   for (let c of comidinhas)  image(comidaImg,   c.x, c.y, 40, 40);
   for (let o of ovos)        image(ovoImg,       o.x, o.y, 40, 40);
 
-  // Vidas: coração pulsante
   for (let i = 0; i < vidasDrop.length; i++) {
     let v = vidasDrop[i];
     let s = 30 + sin(frameCount * 0.15 + i) * 4;
     image(coracaoCheio, v.x, v.y, s, s);
   }
 
-  // Chave
   if (chaveDrop) {
     push();
     translate(chaveDrop.x + 18, chaveDrop.y + 18);
     rotate(sin(frameCount * 0.07) * 0.28);
-    // Halo dourado
     noStroke();
     fill(255, 215, 0, 55 + sin(frameCount * 0.12) * 35);
     ellipse(0, 0, 50, 50);
@@ -228,10 +232,9 @@ function atualizarComidinhas() {
 //  OVOS
 // =============================================
 function atualizarOvos() {
-  const cfg = DIFICULDADES[dificuldadeAtual];
   for (let i = ovos.length - 1; i >= 0; i--) {
     let o = ovos[i];
-    o.y += velocidadeItens * 1.1; // ovos um pouco mais rápidos
+    o.y += velocidadeItens * 1.1;
     if (hit(o.x, o.y, 40, 40)) {
       lives--;
       particula(o.x+20, o.y+20, '#ff4444', 7);
@@ -325,10 +328,6 @@ function hit(x2, y2, w2, h2) {
          capivaraY < y2+h2 && capivaraY+70 > y2;
 }
 
-function collideRectRect(x1,y1,w1,h1,x2,y2,w2,h2) {
-  return x1<x2+w2 && x1+w1>x2 && y1<y2+h2 && y1+h1>y2;
-}
-
 function podeNascer(xNovo, fila, minDist) {
   return !fila.some(item => Math.abs(item.x - xNovo) < minDist);
 }
@@ -363,7 +362,8 @@ function drawPauseOverlay() {
   textSize(38);
   text('⏸ PAUSADO', width/2, height/2 - 22);
   textSize(16);
-  text('Pressione P para continuar', width/2, height/2 + 22);
+  const isMobile = windowWidth < 760;
+  text(isMobile ? 'Toque em ⏸ para continuar' : 'Pressione P para continuar', width/2, height/2 + 22);
 }
 
 // =============================================
@@ -389,7 +389,6 @@ function updateFase() {
 
   mostrarOverlapFase(fase);
 
-  // Chave: cai 1× por partida após fase 5
   if (fase >= 5 && !chaveCaiuEssaPartida && !temChave) {
     chaveCaiuEssaPartida = true;
     setTimeout(() => {
@@ -510,10 +509,8 @@ function keyReleased() {
   if (keyCode === RIGHT_ARROW) rightPressed = false;
 }
 
-// p5.js chama preventDefault em touchstart globalmente — retornar true desativa isso
 function touchStarted() { return true; }
 function touchEnded()   { return true; }
-
 function mousePressed() {}
 function mouseReleased() {}
 
@@ -567,7 +564,7 @@ function selecionarMusica(m) {
 }
 
 // =============================================
-//  PAUSE  (bug corrigido: sem noLoop)
+//  PAUSE
 // =============================================
 function handlePauseToggle() { togglePause(); }
 
@@ -575,7 +572,6 @@ function togglePause() {
   if (!gameStarted) return;
   jogoPausado = !jogoPausado;
 
-  // Atualiza todos os botões de pause
   const status = document.getElementById('pause-status');
   const toggle = document.getElementById('pause-toggle');
   const pIcon  = document.getElementById('touch-pause-icon');
@@ -649,8 +645,32 @@ function trocarTema() {
 }
 
 // =============================================
+//  TUTORIAL MODAL
+// =============================================
+function abrirTutorial() {
+  const modal = document.getElementById('tutorial-modal');
+  if (modal) modal.classList.add('show');
+}
+
+function fecharTutorial() {
+  const modal = document.getElementById('tutorial-modal');
+  if (modal) modal.classList.remove('show');
+}
+
+function fecharTutorialEJogar() {
+  fecharTutorial();
+  startGame();
+}
+
+// =============================================
 //  START GAME
 // =============================================
+function iniciarOuTutorial() {
+  // Abre o tutorial sempre antes de iniciar o jogo.
+  // Não depende mais do localStorage, então funciona mesmo para quem já jogou antes.
+  abrirTutorial();
+}
+
 function startGame() {
   document.body.classList.replace('inicio','jogo');
   document.getElementById('start-screen').style.display    = 'none';
@@ -661,20 +681,17 @@ function startGame() {
     document.getElementById('game-ui').classList.add('ui-visible');
   }, 40);
 
-  // Música
   stopTodasMusicas();
   try { getMusicaObj().loop(); } catch(e) { try { musicaFundo.loop(); } catch(ee){} }
 
-  // Estado
   gameStarted = true;
   jogoPausado = false;
   score = 0; displayedScore = 0;
-  lives = 3; fase = 0;
+  lives = 3; fase = 1;
   temChave = false; chaveCaiuEssaPartida = false; chaveDrop = null;
   particulas = []; flashFrames = 0;
   leftPressed = false; rightPressed = false;
-  
-  // Aplicar tema quando o jogo começa
+
   trocarTema();
 
   const cfg = DIFICULDADES[dificuldadeAtual];
@@ -682,16 +699,17 @@ function startGame() {
   velocidadeCapivara = cfg.velCapivara;
 
   comidinhas = []; ovos = []; vidasDrop = [];
+
+  // Recalcula canvas para o tamanho atual da tela
+  resizeCanvas(calcW(), calcH());
   resetCapivaraPos();
 
-  // Reset pause UI
   setTxt('pause-status','Jogando');
   const toggle = document.getElementById('pause-toggle');
   if (toggle) toggle.checked = false;
   const hudIcon = document.getElementById('hud-pause-icon');
   if (hudIcon) hudIcon.className = 'fa-solid fa-pause';
 
-  // Intervalos (bug fix: não gera itens durante pause)
   clearInterval(comidaInterval);
   clearInterval(ovoInterval);
   clearInterval(vidaInterval);
@@ -773,15 +791,11 @@ function gameOver() {
 function salvarJogo() {
   const tema = document.getElementById('tema')?.value || 'padrao';
   const jogoSalvo = {
-    score,
-    lives,
-    fase,
+    score, lives, fase,
     dificuldade: dificuldadeAtual,
     personagem: personagemAtual,
     musica: musicaAtual,
-    tema,
-    temChave,
-    chaveCaiuEssaPartida,
+    tema, temChave, chaveCaiuEssaPartida,
     salvoEm: Date.now()
   };
   localStorage.setItem('capivaraDashSavedGame', JSON.stringify(jogoSalvo));
@@ -801,7 +815,6 @@ function voltarParaInicio() {
   document.getElementById('game-over-popup').style.display = 'none';
   document.getElementById('game-ui').classList.remove('ui-visible');
 
-  // Mostra recorde na tela inicial
   const best = Number(localStorage.getItem('bestScore') || 0);
   setTxt('start-best-val', best);
 }
@@ -861,8 +874,7 @@ window.onload = () => {
   trocarTema();
   const best = Number(localStorage.getItem('bestScore') || 0);
   setTxt('start-best-val', best);
-  
-  // Setup event listeners para botões touch
+
   setupTouchBtn('btn-left',
     () => { leftPressed = true; },
     () => { leftPressed = false; }

@@ -1,5 +1,5 @@
 /* =============================================
-   CAPIVARA DASH  –  styles.css  v3.0
+   CAPIVARA DASH  –  styles.css  v4.0
    ============================================= */
 
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -33,16 +33,13 @@ body {
   min-height: 100vh;
 }
 
-/* Mantém a tela inicial centralizada verticalmente */
-body.inicio {
-  justify-content: center;
-}
+body.inicio { justify-content: center; }
 
 /* =============================================
-   ROTATE SCREEN  –  exibida em portrait mobile
+   ROTATE SCREEN
    ============================================= */
 #rotate-screen {
-  display: none; /* mostrado via JS / media query */
+  display: none;
   position: fixed;
   inset: 0;
   background: linear-gradient(135deg, #00cc07, #1b6306);
@@ -85,13 +82,12 @@ body.inicio {
   color: rgba(255,255,255,.85);
 }
 
-/* Mostra tela de rotação em portrait em dispositivos touch */
 @media (max-width: 600px) and (orientation: portrait) {
   #rotate-screen { display: flex; }
 }
 
 /* =============================================
-   TELA DE INÍCIO  –  layout 2 colunas
+   TELA DE INÍCIO
    ============================================= */
 #start-screen {
   display: flex;
@@ -115,7 +111,6 @@ body.inicio {
   to   { opacity:1; transform: translateY(0)    scale(1); }
 }
 
-/* Coluna esquerda */
 .start-left {
   display: flex;
   flex-direction: column;
@@ -176,7 +171,6 @@ body.inicio {
   white-space: nowrap;
 }
 
-/* Coluna direita */
 .start-right {
   display: flex;
   flex-direction: column;
@@ -185,7 +179,6 @@ body.inicio {
   justify-content: center;
 }
 
-/* Bloco de configuração */
 .config-bloco {
   display: flex;
   flex-direction: column;
@@ -199,7 +192,6 @@ body.inicio {
   letter-spacing: .5px;
 }
 
-/* Dificuldade */
 .dif-btns { display: flex; gap: 6px; flex-wrap: wrap; }
 
 .dif-btn {
@@ -219,7 +211,6 @@ body.inicio {
   box-shadow: 0 3px 10px rgba(0,0,0,.25);
 }
 
-/* Personagem */
 .char-opcoes { display: flex; gap: 8px; flex-wrap: wrap; }
 
 .char-btn {
@@ -239,7 +230,6 @@ body.inicio {
   box-shadow: 0 4px 14px rgba(0,0,0,.3);
 }
 
-/* Tema select */
 .custom-select {
   position: relative;
   width: min(100%, 240px);
@@ -278,8 +268,8 @@ body.inicio {
 
 .select-options {
   position: absolute;
-  inset: auto 0 0 0;
-  margin-top: 10px;
+  top: calc(100% + 6px);
+  left: 0; right: 0;
   width: 100%;
   background: rgba(255,255,255,.98);
   border: 2px solid var(--green-dark);
@@ -322,7 +312,6 @@ body.inicio {
   font-weight: 700;
 }
 
-/* Música */
 .music-btns { display: flex; gap: 6px; flex-wrap: wrap; }
 
 .music-btn {
@@ -347,7 +336,6 @@ body.inicio {
 }
 .music-btn.mute-toggle:hover { background: rgba(200,0,0,.55); color: #fff; }
 
-/* Botão jogar */
 #btn-jogar {
   padding: clamp(10px,2vw,14px) 0;
   font-size: clamp(20px, 3.5vw, 28px);
@@ -377,10 +365,163 @@ body.inicio {
   .mobile-hint  { display: none; }
 }
 
-/* Start em telas pequenas: empilha verticalmente */
 @media (max-width: 560px) {
   #start-screen { flex-direction: column; align-items: center; }
   .start-left   { min-width: 0; width: 100%; }
+}
+
+@media (max-height: 480px) and (orientation: landscape) {
+  #start-screen {
+    flex-direction: row;
+    max-height: 96dvh;
+    padding: 10px 16px;
+    gap: 16px;
+  }
+  .start-left { min-width: 120px; gap: 6px; }
+  .icone-capivara { width: 70px !important; }
+  #game-title { font-size: 24px !important; }
+  .instrucoes { font-size: 10px; padding: 6px 10px; gap: 3px; }
+  .inst-icon { width: 14px; height: 14px; }
+  .record-badge { font-size: 10px; padding: 4px 10px; }
+  .start-right { gap: 7px; }
+  .config-label { font-size: 10px; }
+  .dif-btn, .music-btn { font-size: 10px; padding: 4px 10px; }
+  .char-btn { width: 34px; height: 34px; font-size: 18px; }
+  #btn-jogar { padding: 8px 0; font-size: 18px; }
+}
+
+/* =============================================
+   MODAL TUTORIAL
+   ============================================= */
+#tutorial-modal {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,.72);
+  backdrop-filter: blur(6px);
+  z-index: 50;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+}
+#tutorial-modal.show { display: flex; }
+
+.tutorial-inner {
+  background: linear-gradient(155deg, #00ff08 0%, #00cc07 100%);
+  border-radius: 24px;
+  box-shadow: 0 10px 40px rgba(0,0,0,.5), 0 0 0 4px var(--green-dark);
+  padding: clamp(20px,4vw,34px) clamp(24px,5vw,40px);
+  max-width: 480px;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  animation: popIn .35s cubic-bezier(.17,.67,.37,1.2) both;
+  max-height: 94dvh;
+  overflow-y: auto;
+  scrollbar-width: none;
+  position: relative;
+}
+.tutorial-inner::-webkit-scrollbar { display: none; }
+
+.tutorial-close {
+  position: absolute;
+  top: 12px; right: 14px;
+  background: rgba(0,0,0,.18);
+  border: none;
+  border-radius: 50%;
+  width: 36px; height: 36px;
+  font-size: 20px;
+  color: #fff;
+  cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  transition: background .15s, transform .1s;
+}
+.tutorial-close:hover { background: rgba(0,0,0,.38); transform: scale(1.1); }
+
+.tutorial-inner h2 {
+  font-size: clamp(22px,5vw,32px);
+  color: var(--green-dark);
+  text-shadow: 2px 2px 0 #000;
+  text-align: center;
+  padding-right: 32px;
+}
+
+.tutorial-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+
+.tutorial-card {
+  background: rgba(255,255,255,.45);
+  border-radius: 14px;
+  padding: 12px 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  align-items: center;
+  text-align: center;
+}
+
+.tutorial-card .t-icon { font-size: 28px; }
+.tutorial-card .t-title {
+  font-size: clamp(11px,2vw,13px);
+  color: var(--green-dark);
+  font-family: var(--font);
+}
+.tutorial-card .t-desc {
+  font-size: clamp(10px,1.8vw,12px);
+  color: rgba(0,0,0,.65);
+  font-family: sans-serif;
+  line-height: 1.3;
+}
+
+.tutorial-controles {
+  background: rgba(255,255,255,.35);
+  border-radius: 14px;
+  padding: 12px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.tutorial-controles .t-title {
+  font-size: clamp(11px,2vw,13px);
+  color: var(--green-dark);
+  font-family: var(--font);
+  text-align: center;
+  margin-bottom: 4px;
+}
+
+.t-ctrl-row {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  font-size: clamp(10px,1.8vw,12px);
+  color: rgba(0,0,0,.7);
+  font-family: sans-serif;
+}
+
+.t-key {
+  background: var(--green-dark);
+  color: #fff;
+  border-radius: 6px;
+  padding: 2px 8px;
+  font-family: monospace;
+  font-size: 12px;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.tutorial-btn-group {
+  display: flex;
+  gap: 10px;
+}
+
+.tutorial-btn-group .btn-primary,
+.tutorial-btn-group .btn-secondary {
+  flex: 1;
 }
 
 /* =============================================
@@ -423,25 +564,17 @@ body.inicio {
   min-width: 64px;
 }
 
-.hud-center {
-  flex: 1;
-  gap: 4px;
-}
+.hud-center { flex: 1; gap: 4px; }
 
 .hud-right-group {
   display: flex;
   flex-direction: row;
   align-items: center;
   gap: 8px;
-  flex-direction: row;
   min-width: auto;
 }
 
-.hud-sub {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-}
+.hud-sub { display: flex; flex-direction: column; align-items: center; }
 
 .hud-label {
   font-size: clamp(8px, 1.6vw, 11px);
@@ -455,7 +588,6 @@ body.inicio {
 }
 .hud-value.record { color: var(--gold); }
 
-/* Ícone bouton no HUD */
 .hud-icon-btn {
   background: rgba(255,255,255,.12);
   border: 1.5px solid rgba(255,255,255,.3);
@@ -484,10 +616,8 @@ body.inicio {
   justify-content: center;
   font-size: 16px;
 }
-
 .hud-action-btn:hover { background: rgba(255,255,255,.28); transform: scale(1.05); }
 
-/* Vidas HTML */
 .vidas-container {
   display: flex;
   gap: 3px;
@@ -507,7 +637,6 @@ body.inicio {
   to   { filter: drop-shadow(0 0 10px var(--gold)) brightness(1.35); }
 }
 
-/* Barra de fase */
 .fase-bar-wrapper {
   display: flex; flex-direction: column; align-items: center; gap: 2px;
   width: clamp(90px, 26vw, 160px);
@@ -544,7 +673,7 @@ body.inicio {
    ============================================= */
 .sidebar, .sidebar-right { display: none; }
 
-@media (min-width: 760px) {
+@media (min-width: 760px) and (pointer: fine) and (min-height: 521px) {
   .sidebar {
     display: flex;
     width: 76px; height: 420px;
@@ -575,9 +704,7 @@ body.inicio {
   }
 }
 
-.sidebar-block {
-  display: flex; flex-direction: column; align-items: center;
-}
+.sidebar-block { display: flex; flex-direction: column; align-items: center; }
 
 .chave-hud-icon {
   font-size: 24px;
@@ -585,28 +712,29 @@ body.inicio {
 }
 
 /* =============================================
-   CANVAS
+   CANVAS  — CSS não interfere no tamanho!
+   O p5.js seta width/height inline via calcW/calcH.
+   Aqui só decoração.
    ============================================= */
 #game-canvas {
   position: relative;
   display: flex; align-items: center; justify-content: center;
   flex: 1;
-  max-width: 560px; max-height: 420px;
   min-width: 0;
+  min-height: 0;
+  overflow: hidden;
 }
 
 canvas {
   border-radius: var(--radius);
   box-shadow: 0 0 28px var(--shadow-neon);
   display: block;
-  width: 100% !important;
-  height: auto !important;
-  max-height: calc(100vh - 180px);
   touch-action: none;
+  /* NÃO sobrescrever width/height — p5.js controla isso */
 }
 
 /* =============================================
-   PAUSE TOGGLE (sidebar)
+   PAUSE TOGGLE (sidebar desktop)
    ============================================= */
 #pause-container {
   display: flex; flex-direction: column; align-items: center;
@@ -637,7 +765,6 @@ input:checked + .slider { background: #d11b1b; }
 input:checked + .slider:before { transform: translateX(76px); }
 #pause-status { position: relative; z-index: 3; }
 
-/* Mute sidebar */
 #mute-button-side {
   background: transparent; border: none; cursor: pointer;
   font-size: 22px; color: var(--green);
@@ -646,10 +773,10 @@ input:checked + .slider:before { transform: translateX(76px); }
 #mute-button-side:hover { transform: scale(1.15); color: var(--gold); }
 
 /* =============================================
-   TOUCH CONTROLS  (mobile landscape)
+   TOUCH CONTROLS  — sempre visível em mobile
    ============================================= */
 .touch-controls {
-  display: flex;
+  display: none; /* desktop: oculto */
   align-items: center;
   justify-content: space-between;
   width: 100%;
@@ -658,20 +785,18 @@ input:checked + .slider:before { transform: translateX(76px); }
   flex-shrink: 0;
   pointer-events: auto;
   z-index: 25;
+  background: rgba(0,0,0,.35);
+  border-top: 1px solid rgba(255,255,255,.15);
 }
 
-@media (min-width: 760px) {
-  .touch-controls { display: none; }
-}
-
-.touch-controls {
-  max-width: 100%;
+@media (max-width: 759px), (pointer: coarse), (max-height: 520px) and (orientation: landscape) {
+  .touch-controls { display: flex; }
 }
 
 .touch-btn {
-  background: rgba(0,0,0,.45);
-  border: 2px solid rgba(110,236,7,.55);
-  border-radius: 12px; color: #fff;
+  background: rgba(0,0,0,.5);
+  border: 2px solid rgba(110,236,7,.6);
+  border-radius: 14px; color: #fff;
   font-size: 22px; cursor: pointer;
   transition: background .1s, transform .1s;
   -webkit-tap-highlight-color: transparent;
@@ -682,12 +807,52 @@ input:checked + .slider:before { transform: translateX(76px); }
   justify-content: center;
   padding: 0;
 }
-.touch-btn:active { background: rgba(110,236,7,.3); transform: scale(.94); }
+.touch-btn:active { background: rgba(110,236,7,.35); transform: scale(.93); }
 
-.touch-dir { width: 68px; height: 60px; font-size: 26px; }
+.touch-dir { width: 80px; height: 64px; font-size: 28px; flex-shrink: 0; }
 
-.touch-center-controls { display: flex; gap: 10px; }
-.touch-small { width: 48px; height: 48px; font-size: 17px; }
+.touch-center-controls { display: flex; gap: 10px; align-items: center; }
+.touch-small { width: 52px; height: 52px; font-size: 18px; }
+
+/* =============================================
+   MOBILE GAME — ajustes quando < 760px
+   ============================================= */
+@media (max-width: 759px), (pointer: coarse), (max-height: 520px) and (orientation: landscape) {
+  /* HUD compacto/mobile landscape */
+  .hud-top {
+    padding: 3px 8px;
+    gap: 4px;
+  }
+  .hud-cell { min-width: 44px; }
+  .hud-value { font-size: 16px; }
+  .hud-label { font-size: 9px; }
+  /* Esconde recorde no HUD topo — economiza espaço */
+  .hud-sub { display: none; }
+  /* Botões HUD menores */
+  .hud-icon-btn { width: 30px; height: 30px; font-size: 14px; }
+  .hud-action-btn { height: 30px; min-width: 34px; padding: 0 8px; font-size: 14px; }
+  /* Sidebars ocultas */
+  .sidebar, .sidebar-right { display: none !important; }
+  /* Canvas ocupa todo o espaço disponível */
+  #game-canvas {
+    width: 100%;
+    flex: 1;
+  }
+  .game-area {
+    padding: 0;
+    gap: 0;
+  }
+}
+
+/* Landscape muito compacto (altura < 420px) */
+@media (max-height: 420px) {
+  .hud-top { padding: 2px 8px; }
+  .hud-value { font-size: 13px; }
+  .fase-bar-wrapper { display: none; }
+  .touch-dir   { width: 64px; height: 50px; font-size: 22px; }
+  .touch-small { width: 42px; height: 42px; font-size: 15px; }
+  .touch-controls { padding: 3px 10px; }
+}
 
 /* =============================================
    GAME OVER POPUP
@@ -718,9 +883,7 @@ input:checked + .slider:before { transform: translateX(76px); }
   to   { opacity:1; transform: scale(1); }
 }
 
-.gameover-img {
-  width: 72px; animation: float 2s ease-in-out infinite;
-}
+.gameover-img { width: 72px; animation: float 2s ease-in-out infinite; }
 
 .gameover-inner h2 {
   font-size: clamp(26px, 7vw, 38px);
@@ -742,10 +905,7 @@ input:checked + .slider:before { transform: translateX(76px); }
   border-radius: 10px; padding: 8px 16px;
 }
 
-.score-label {
-  font-size: clamp(10px,2.5vw,13px);
-  color: rgba(255,255,255,.82);
-}
+.score-label { font-size: clamp(10px,2.5vw,13px); color: rgba(255,255,255,.82); }
 
 .score-value {
   font-size: clamp(22px, 6vw, 32px);
@@ -789,56 +949,6 @@ input:checked + .slider:before { transform: translateX(76px); }
   box-shadow: 0 4px 0 rgba(0,0,0,.18);
 }
 .btn-secondary:hover { background: rgba(255,255,255,.38); }
-
-@media (max-width: 760px) {
-  .game-area {
-    flex-direction: column;
-    align-items: stretch;
-    gap: 0;
-    padding: 0;
-    flex: 1;
-    min-height: 0;
-  }
-
-  .hud-top {
-    flex-wrap: wrap;
-    justify-content: center;
-    gap: 6px;
-    padding: 4px 8px;
-  }
-
-  .hud-right-group {
-    justify-content: center;
-    flex-wrap: wrap;
-    gap: 6px;
-  }
-
-  .sidebar, .sidebar-right {
-    display: none;
-  }
-
-  #game-canvas {
-    max-width: 100%;
-    width: 100%;
-    flex: 1;
-    min-height: 0;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
-
-  canvas {
-    max-height: calc(100dvh - 160px);
-    pointer-events: none;
-  }
-
-  .touch-controls {
-    background: rgba(0,0,0,.35);
-    padding: 8px 12px 10px;
-    border-top: 1px solid rgba(255,255,255,.18);
-    flex-shrink: 0;
-  }
-}
 
 /* =============================================
    OVERLAY DE FASE
@@ -945,23 +1055,131 @@ input:checked + .slider:before { transform: translateX(76px); }
 }
 
 /* =============================================
-   LANDSCAPE COMPACTO (altura < 500px)
-   ============================================= */
-@media (max-height: 500px) {
-  .hud-top { padding: 3px 10px; }
-  .touch-dir   { width: 58px; height: 48px; font-size: 22px; }
-  .touch-small { width: 42px; height: 42px; font-size: 15px; }
-  .touch-controls { padding: 4px 10px; }
-  canvas { max-height: calc(100dvh - 110px); }
-  .gameover-inner { padding: 12px; gap: 8px; }
-  .gameover-img { width: 48px; }
-}
-
-/* =============================================
    MUITO PEQUENO (largura < 400px)
    ============================================= */
 @media (max-width: 400px) {
   .start-left .icone-capivara { width: 80px; }
   #game-title { font-size: 28px; }
-  .touch-dir { width: 58px; height: 54px; }
+  .touch-dir { width: 66px; height: 56px; }
+}
+
+
+/* ===== FIX MOBILE LANDSCAPE =====
+   Celular deitado costuma ter largura > 760px, então o CSS antigo ativava
+   o layout desktop, escondia os botões touch e deixava as sidebars. */
+@media (pointer: coarse), (max-height: 520px) and (orientation: landscape) {
+  body.jogo {
+    overflow: hidden;
+  }
+
+  body.jogo .footer {
+    display: none;
+  }
+
+  body.jogo .game-wrapper {
+    height: 100dvh;
+    max-height: 100dvh;
+  }
+
+  body.jogo .game-area {
+    width: 100%;
+    flex: 1;
+    min-height: 0;
+    padding: 0;
+    gap: 0;
+  }
+
+  body.jogo .sidebar,
+  body.jogo .sidebar-right {
+    display: none !important;
+  }
+
+  body.jogo #game-canvas {
+    width: 100%;
+    height: auto;
+    flex: 1;
+  }
+
+  body.jogo .touch-controls {
+    display: flex !important;
+    position: relative;
+    z-index: 60;
+  }
+
+  body.jogo .hud-top {
+    position: relative;
+    z-index: 65;
+    width: 100%;
+  }
+}
+
+/* =====================================================
+   AJUSTE DE LAYOUT DESKTOP — aproxima HUD, canvas e sidebars
+   ===================================================== */
+@media (min-width: 760px) and (pointer: fine) and (min-height: 521px) {
+  body.jogo {
+    justify-content: flex-start;
+    overflow: hidden;
+  }
+
+  body.jogo .game-wrapper {
+    width: auto;
+    max-width: calc(100vw - 12px);
+    height: 100dvh;
+    margin: 0 auto;
+    align-items: center;
+  }
+
+  body.jogo .hud-top {
+    width: calc(76px + 560px + 136px + 16px);
+    max-width: calc(100vw - 12px);
+    border-radius: 0 0 12px 12px;
+    padding: 5px 12px;
+    align-self: center;
+  }
+
+  body.jogo .game-area {
+    flex: 1;
+    width: auto;
+    max-width: calc(100vw - 12px);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 8px;
+    padding: 0;
+  }
+
+  body.jogo #game-canvas {
+    flex: 0 0 auto;
+    width: auto;
+    min-width: auto;
+  }
+
+  body.jogo .sidebar,
+  body.jogo .sidebar-right {
+    height: 420px;
+    margin: 0;
+  }
+
+  body.jogo canvas {
+    display: block;
+  }
+
+  body.jogo .footer {
+    width: calc(76px + 560px + 136px + 16px);
+    max-width: calc(100vw - 12px);
+    margin: 0 auto;
+    text-align: center;
+  }
+}
+
+/* Mantém o comportamento mobile/touch ocupando a tela toda */
+@media (pointer: coarse), (max-height: 520px) and (orientation: landscape) {
+  body.jogo .game-wrapper,
+  body.jogo .hud-top,
+  body.jogo .game-area,
+  body.jogo #game-canvas {
+    width: 100%;
+    max-width: 100%;
+  }
 }

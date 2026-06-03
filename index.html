@@ -106,14 +106,78 @@
         </div>
       </div>
 
-      <button id="btn-jogar" onclick="startGame()">
+      <!-- BOTÃO JOGAR — abre tutorial na 1ª vez, senão vai direto -->
+      <button id="btn-jogar" onclick="iniciarOuTutorial()">
         <i class="fa-solid fa-play"></i> JOGAR
       </button>
 
       <p class="controles-hint">
         <span class="desktop-hint">← → Mover &nbsp;·&nbsp; P Pausar &nbsp;·&nbsp; M Mutar</span>
-        <span class="mobile-hint">👆 Botões na tela para mover</span>
+        <span class="mobile-hint">👆 Use os botões ◀ ▶ para mover</span>
       </p>
+    </div>
+  </div>
+
+  <!-- ===== MODAL TUTORIAL ===== -->
+  <div id="tutorial-modal">
+    <div class="tutorial-inner">
+
+      <button class="tutorial-close" onclick="fecharTutorial()" title="Fechar">✕</button>
+
+      <h2>🦫 Como Jogar</h2>
+
+      <div class="tutorial-grid">
+        <div class="tutorial-card">
+          <div class="t-icon">🌿</div>
+          <div class="t-title">Capim</div>
+          <div class="t-desc">Pegue o capim que cai para ganhar <b>+10 pontos</b>. Se perder, perde uma vida!</div>
+        </div>
+        <div class="tutorial-card">
+          <div class="t-icon">🪨</div>
+          <div class="t-title">Pedra </div>
+          <div class="t-desc">Desvie das pedras! Tocá-las faz você <b>perder uma vida</b>.</div>
+        </div>
+        <div class="tutorial-card">
+          <div class="t-icon">❤️</div>
+          <div class="t-title">Coração</div>
+          <div class="t-desc">Pegue para <b>recuperar uma vida</b>. Aparece de vez em quando!</div>
+        </div>
+        <div class="tutorial-card">
+          <div class="t-icon">🔑</div>
+          <div class="t-title">Chave</div>
+          <div class="t-desc">Aparece na <b>fase 5+</b>. Permite reviver <b>uma vez</b> se morrer!</div>
+        </div>
+      </div>
+
+      <div class="tutorial-controles">
+        <div class="t-title">🎮 Controles</div>
+        <div class="t-ctrl-row">
+          <span class="t-key">◀ ▶ na tela</span>
+          <span>Mover a capivara (mobile)</span>
+        </div>
+        <div class="t-ctrl-row">
+          <span class="t-key">← →</span>
+          <span>Mover a capivara (teclado)</span>
+        </div>
+        <div class="t-ctrl-row">
+          <span class="t-key">P</span>
+          <span>Pausar / continuar</span>
+        </div>
+        <div class="t-ctrl-row">
+          <span class="t-key">M</span>
+          <span>Mutar / desmutar som</span>
+        </div>
+      </div>
+
+      <div class="tutorial-btn-group">
+        <button class="btn-secondary" onclick="fecharTutorial()">
+          <i class="fa-solid fa-xmark"></i> Fechar
+        </button>
+        <button class="btn-primary" onclick="fecharTutorialEJogar()">
+          <i class="fa-solid fa-play"></i> Jogar agora!
+        </button>
+      </div>
+
     </div>
   </div>
 
@@ -197,7 +261,7 @@
       </div>
     </div>
 
-    <!-- Controles touch (mobile landscape) -->
+    <!-- Controles touch (mobile) -->
     <div class="touch-controls" id="touch-controls">
       <button class="touch-btn touch-dir" id="btn-left">
         <i class="fa-solid fa-arrow-left"></i>
